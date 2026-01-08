@@ -66,9 +66,17 @@ class DMDeleterBot(discord.Client):
                 print(f"{Fore.YELLOW}{'='*60}\n")
                 
                 try:
-                    choice = input(f"{Fore.CYAN}Choice: {Style.RESET_ALL}").lower().strip()
-                    if choice in ['y', 'yes']:
-                        await self.delete_all_messages(channel)
+                    choice = input(f"{Fore.CYAN}Choice (y/n): {Style.RESET_ALL}").lower().strip()
+                    if choice in ['y', 'yes', 't', 'tak']:
+                        # Ask for limit
+                        limit_input = input(f"{Fore.CYAN}How many messages to delete? (Press Enter for ALL): {Style.RESET_ALL}").strip()
+                        limit = int(limit_input) if limit_input.isdigit() else None
+                        
+                        # Ask for phrase
+                        phrase = input(f"{Fore.CYAN}Delete only messages containing phrase? (Press Enter for NO FILTER): {Style.RESET_ALL}").strip()
+                        phrase = phrase if phrase else None
+                        
+                        await self.delete_all_messages(channel, limit=limit, phrase=phrase)
                 except Exception as e:
                     self.log(f"Error reading input: {e}", "ERROR")
             else:
@@ -112,15 +120,28 @@ class DMDeleterBot(discord.Client):
             except Exception as e:
                 self.log(f"Error deleting message: {e}", "ERROR")
     
-    async def delete_all_messages(self, channel):
-        """Deletes all user's messages from the channel"""
-        self.log("Starting to delete historical messages...", "INFO")
+    async def delete_all_messages(self, channel, limit=None, phrase=None):
+        """Deletes user's messages from the channel with optional limit and phrase filter"""
+        filter_info = f" containing '{phrase}'" if phrase else ""
+        limit_info = f" (limit: {limit})" if limit else " (no limit)"
+        self.log(f"Starting to delete historical messages{filter_info}{limit_info}...", "INFO")
+        
         deleted = 0
+        checked = 0
         
         try:
             # Iterate through all messages
             async for message in channel.history(limit=None):
+                # Stop if limit reached
+                if limit and deleted >= limit:
+                    break
+                    
+                checked += 1
                 if message.author.id == self.user.id:
+                    # Check phrase filter if provided
+                    if phrase and phrase.lower() not in message.content.lower():
+                        continue
+                        
                     try:
                         await message.delete()
                         deleted += 1
@@ -143,7 +164,7 @@ class DMDeleterBot(discord.Client):
                     except Exception as e:
                         self.log(f"Error: {e}", "ERROR")
             
-            self.log(f"Completed! Deleted {deleted} messages.", "SUCCESS")
+            self.log(f"Completed! Checked {checked} messages, deleted {deleted}.", "SUCCESS")
             
         except Exception as e:
             self.log(f"Error fetching message history: {e}", "ERROR")

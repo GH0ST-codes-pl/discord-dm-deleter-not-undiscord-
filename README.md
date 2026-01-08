@@ -30,7 +30,9 @@ Using this tool may result in:
 ## ✨ Features
 
 - ✅ **Real-time auto-delete** - Every new message is automatically deleted
-- ✅ **Bulk delete** - Delete all historical messages from selected DM
+- ✅ **Bulk delete** - Delete historical messages from selected DM
+- ✅ **Advanced Filters** - Delete only messages containing a specific phrase
+- ✅ **Quantity Limits** - Specify how many messages to delete (e.g., delete only the last 50)
 - ✅ **Stealth mode** - Random delays (0.8-2.5s) mimic human behavior
 - ✅ **Colorful console** - Timestamped logs with status indicators
 - ✅ **Rate limit handling** - Automatic retry with exponential backoff
@@ -48,8 +50,9 @@ Using this tool may result in:
 ### Linux / macOS / Termux
 
 ```bash
-# Clone or download the repository
-cd discord-dm-auto-deleter-github
+# Clone the repository
+git clone https://github.com/GH0ST-codes-pl/discord-dm-deleter-not-undiscord-
+cd discord-dm-deleter-not-undiscord-
 
 # Run automated setup
 chmod +x setup.sh
@@ -260,11 +263,13 @@ python bot.py
 
 1. Bot logs into your Discord account
 2. Displays account info and available DMs
-3. Asks: **"Delete all existing messages? (y/n)"**
-   - `y` - Deletes all old messages from DM
+3. Asks: **"Do you want to delete all existing messages? (y/n)"**
+   - `y` - Starts the bulk deletion wizard:
+     - **Limit**: Enter a number (e.g., `50`) or press Enter for ALL.
+     - **Phrase**: Enter a word/phrase to filter or press Enter for NO FILTER.
    - `n` - Skips bulk delete
 4. Starts **real-time monitoring**
-   - Every message you send in this DM will be auto-deleted
+   - Every message you send in this DM will be auto-deleted automatically.
 
 ### Stopping the Bot
 
